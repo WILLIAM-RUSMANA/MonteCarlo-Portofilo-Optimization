@@ -52,7 +52,7 @@ tickers = [
     "GE",    # General Electric
     "GS",    # Goldman Sachs
     "SBUX"   # Starbucks
-]``
+]
 
 
 start = '2014-01-01'
