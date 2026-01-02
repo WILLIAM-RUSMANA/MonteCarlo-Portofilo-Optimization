@@ -67,10 +67,6 @@ def plot_allocation(results):
         autotext.set_fontsize(9)
 
     # Bar chart of Sharpe ratios
-    sharpe_values = [
-        results["sharpe_ratios"][stock]["sharpe_ratio"] for stock in stocks
-    ]
-    bars = ax2.bar(range(len(stocks)), sharpe_values, color=colors)
     ax2.set_xticks(range(len(stocks)))
     ax2.set_xticklabels(stocks, rotation=45, ha="right")
     ax2.set_ylabel("Sharpe Ratio", fontsize=12)

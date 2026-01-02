@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 
 if __name__ == "__main__":
     # -----------------------------
@@ -36,11 +35,14 @@ if __name__ == "__main__":
             df_pct[column],
             label=column,
             color=colors[column],
-            linewidth=1.3
+            linewidth=1.3,
         )
 
-    plt.title("Historical Stock Returns – All Stocks (2015–2025)",
-            fontsize=16, fontweight="bold")
+    plt.title(
+        "Historical Stock Returns – All Stocks (2015–2025)",
+        fontsize=16,
+        fontweight="bold",
+    )
     plt.xlabel("Date")
     plt.ylabel("Percentage Return (%)")
     plt.legend(ncol=3, fontsize=9)
@@ -59,9 +61,7 @@ if __name__ == "__main__":
 
     plt.figure(figsize=(14, 8))
 
-    sorted_columns_no_nvda = (
-        df_pct_no_nvda.iloc[-1].sort_values(ascending=False).index
-    )
+    sorted_columns_no_nvda = df_pct_no_nvda.iloc[-1].sort_values(ascending=False).index
 
     for column in sorted_columns_no_nvda:
         plt.plot(
@@ -69,11 +69,14 @@ if __name__ == "__main__":
             df_pct_no_nvda[column],
             label=column,
             color=colors[column],
-            linewidth=1.3
+            linewidth=1.3,
         )
 
-    plt.title("Historical Stock Returns – Excluding NVDA (2015–2025)",
-            fontsize=16, fontweight="bold")
+    plt.title(
+        "Historical Stock Returns – Excluding NVDA (2015–2025)",
+        fontsize=16,
+        fontweight="bold",
+    )
     plt.xlabel("Date")
     plt.ylabel("Percentage Return (%)")
     plt.legend(ncol=3, fontsize=9)
