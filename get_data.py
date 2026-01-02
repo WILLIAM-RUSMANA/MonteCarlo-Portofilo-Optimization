@@ -57,8 +57,8 @@ tickers = [
 RF_rate = 0
 
 if __name__ == "__main__":
-    start = '2013-01-01'
-    end = '2025-01-01'
+    start = "2013-01-01"
+    end = "2025-01-01"
     start_year = start[0:4]
     end_year = end[0:4]
 
@@ -68,11 +68,11 @@ if __name__ == "__main__":
     print(complete_data.columns.levels[0])
 
     # Use "Close" instead of "Adj Close"
-    if 'Adj Close' in complete_data.columns.levels[0]:
-        target_price_data = complete_data['Adj Close']
+    if "Adj Close" in complete_data.columns.levels[0]:
+        target_price_data = complete_data["Adj Close"]
     else:
-        target_price_data = complete_data['Close']
+        target_price_data = complete_data["Close"]
 
     target_price_data.to_csv(f"data/stocks_close_{start_year}_{end_year}.csv")
 
-    print("✅ Saved closing prices:", target_price_data.shape)
+    print("Saved closing prices:", target_price_data.shape)
