@@ -10,6 +10,9 @@ sys.path.append(str(ROOT))
 from monte_carlo_method import monte_carlo_method
 from greedy import greedy_portfolio_allocation as greedy_cont
 from greedy_whole import greedy_portfolio_allocation as greedy_whole
+from equal_weight import equal_weight_allocation
+from constants import CSV_FILE, CSV_BACKTEST
+
 
 # Page config
 st.set_page_config(page_title="Portfolio Allocator", layout="wide")
@@ -34,14 +37,13 @@ page = st.sidebar.radio(
 
 
 # Helper functions
-@st.cache_data
 def run_monte_carlo():
-    return monte_carlo_method()
+    return monte_carlo_method(num_simulations=3000)
 
 
 @st.cache_data
 def load_prices():
-    df = pd.read_csv("data/stocks_close_2013_2025.csv", parse_dates=["Date"])
+    df = pd.read_csv(CSV_BACKTEST, parse_dates=["Date"])
     df.set_index("Date", inplace=True)
     return df
 
@@ -206,47 +208,60 @@ elif page == "Algorithm 2":
 
 # ========== PAGE 3: ALGORITHM 3  ==========
 elif page == "Algorithm 3":
-    st.header("Algorithm 3")
+    st.header("Equal-Weight Algorithm")
 
-    st.info("for algo 3 ")
+    if st.button("Run Allocation", type="primary"):
+        with st.spinner(
+            "Running Monte Carlo simulation and equal-weight allocation..."
+        ):
+            # Use same Monte Carlo results
+            results = run_monte_carlo()
 
-    # Dummy equal-weight allocation
-    dummy_alloc = {
-        "AAPL": 0.2,
-        "MSFT": 0.2,
-        "NVDA": 0.2,
-        "KO": 0.2,
-        "PG": 0.2,
-    }
-    dummy_proj_return = 0.12  # placeholder
+            allocations_eq, eq_results = equal_weight_allocation(
+                results,
+                display_results=False,
+            )
 
-    # Pie chart
-    df_dummy = pd.DataFrame(
-        {
-            "Stock": list(dummy_alloc.keys()),
-            "Weight": list(dummy_alloc.values()),
-        }
-    )
+            # Pie chart of equal weights
+            eq_df = pd.DataFrame(
+                {
+                    "Stock": list(allocations_eq.keys()),
+                    "Weight": list(allocations_eq.values()),
+                }
+            )
 
-    fig_dummy = px.pie(df_dummy, names="Stock", values="Weight", title="dummy algo 3 ")
-    st.plotly_chart(fig_dummy, width="stretch")
+            fig_eq = px.pie(
+                eq_df,
+                names="Stock",
+                values="Weight",
+                title="Equal-Weight Portfolio Allocation",
+            )
+            st.plotly_chart(fig_eq, width="stretch")
 
-    # Metrics
-    st.metric("Projected annual return (dummy)", f"{dummy_proj_return:.2%}")
-    st.metric("Cash remaining (dummy)", "$543.21")
+            # Metrics
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric(
+                    "Projected annual return (equal weight)",
+                    f"{eq_results['portfolio_return']:.2%}",
+                )
+            with col2:
+                st.metric(
+                    "Portfolio Sharpe Ratio (equal weight)",
+                    f"{eq_results['portfolio_sharpe']:.4f}",
+                )
 
-    # Sidebar
-    st.sidebar.subheader(" Shares to Buy")
-    st.sidebar.caption("Placeholder data")
-    st.sidebar.write("**AAPL**: 20 shares")
-    st.sidebar.write("**MSFT**: 20 shares")
-    st.sidebar.write("**NVDA**: 20 shares")
-    st.sidebar.write("**KO**: 20 shares")
-    st.sidebar.write("**PG**: 20 shares")
-    st.sidebar.divider()
-    st.sidebar.write("**Cash remaining**: $543.21")
+            # Sidebar (no shares, just weights)
+            st.sidebar.subheader("Equal Weights")
+            st.sidebar.caption("Each selected stock has the same weight")
+            for ticker, w in sorted(
+                allocations_eq.items(), key=lambda x: x[1], reverse=True
+            ):
+                st.sidebar.write(f"**{ticker}**: {w:.2%}")
 
-    # Historical
-    st.subheader("Historical Stock Performance")
-    # prices = load_prices()
-    # st.line_chart(prices)
+            # Historical performance
+            st.subheader("Historical Stock Performance")
+            prices = load_prices()
+            st.line_chart(prices)
+    else:
+        st.info("set amount here")
