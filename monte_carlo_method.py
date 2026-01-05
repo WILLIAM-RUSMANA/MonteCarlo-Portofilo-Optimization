@@ -1,12 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
-# Configuration
-csv = "data/stocks_close_2013_2025.csv"  # Replace with your CSV file path
-NUM_SIMULATIONS = 10000
-TRADING_DAYS_PER_YEAR = 252
-
+from constants import CSV_FILE, NUM_SIMULATIONS, TRADING_DAYS_PER_YEAR
 
 def load_and_prepare_data(filepath):
     """Load CSV and prepare data for analysis"""
@@ -119,9 +114,9 @@ def plot_top_stocks(results, top_n=10):
     plt.show()
 
 
-def monte_carlo_method():
+def monte_carlo_method(num_simulations=NUM_SIMULATIONS, trading_days_per_year=TRADING_DAYS_PER_YEAR):
     print("Loading stock data...")
-    prices = load_and_prepare_data(csv)
+    prices = load_and_prepare_data(CSV_FILE)
 
     print(f"Data loaded: {len(prices)} days of data")
     print(f"Date range: {prices.index[0].date()} to {prices.index[-1].date()}")
@@ -130,8 +125,8 @@ def monte_carlo_method():
     print("\nCalculating daily returns...")
     returns = calculate_returns(prices)
 
-    print(f"Running Monte Carlo simulation with {NUM_SIMULATIONS:,} iterations...")
-    results = monte_carlo_simulation(returns, NUM_SIMULATIONS, TRADING_DAYS_PER_YEAR)
+    print(f"Running Monte Carlo simulation with {num_simulations:,} iterations...")
+    results = monte_carlo_simulation(returns, num_simulations, trading_days_per_year)
 
     display_results(results)
 

@@ -37,9 +37,8 @@ page = st.sidebar.radio(
 
 
 # Helper functions
-@st.cache_data
 def run_monte_carlo():
-    return monte_carlo_method()
+    return monte_carlo_method(num_simulations=3000)
 
 
 @st.cache_data
