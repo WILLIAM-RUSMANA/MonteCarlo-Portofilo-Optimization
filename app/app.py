@@ -8,20 +8,15 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT))
 
 from monte_carlo_method import monte_carlo_method
-from greedy import greedy_portfolio_allocation as greedy_cont
-from greedy_whole import greedy_portfolio_allocation as greedy_whole
+from greedy import greedy_portfolio_allocation
 from equal_weight import equal_weight_allocation
 from dp_knapsack import dp_knapsack_portfolio_allocation
 from constants import CSV_BACKTEST
 
 
-# Page config
 st.set_page_config(page_title="Portfolio Allocator", layout="wide")
-
-# Title
 st.title("Portfolio Allocator")
 
-# Amount input (shared across all pages)
 amount = st.number_input(
     "Amount of USD to allocate",
     min_value=100.0,
@@ -29,7 +24,6 @@ amount = st.number_input(
     step=1000.0,
 )
 
-# Sidebar navigation
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
     "Select Algorithm",
@@ -37,7 +31,6 @@ page = st.sidebar.radio(
 )
 
 
-# Helper functions
 def run_monte_carlo():
     return monte_carlo_method(num_simulations=3000)
 
@@ -49,112 +42,59 @@ def load_prices():
     return df
 
 
-def projected_return_from_alloc(alloc, results):
-    return sum(
-        w * results[t]["mean_annual_return"] for t, w in alloc.items() if t in results
-    )
-
-
 # ========== PAGE 1: GREEDY ==========
 if page == "Greedy":
-    st.header("Greedy Algorithm")
+    st.header("Greedy Sharpe Algorithm")
 
-    # Add a button to start simulation
-    if st.button("Run Allocation", type="primary"):
-        with st.spinner("Running Monte Carlo simulation and allocation algorithms..."):
-            # Run Monte Carlo and algorithms
+    if st.button("Run Allocation", type="primary", key="greedy_btn"):
+        with st.spinner("Running Monte Carlo and Greedy allocation..."):
             results = run_monte_carlo()
 
-            cont_alloc = greedy_cont(
+            allocations, greedy_results = greedy_portfolio_allocation(
                 results,
                 target_num_stocks=50,
-                plot_results=False,
-                compare_equal_weight=False,
                 display_results=False,
             )
 
-            whole_alloc = greedy_whole(
-                results,
-                amount,
-                target_num_stocks=50,
-                plot_results=False,
-                compare_equal_weight=False,
-                display_results=False,
-            )
-
-            shares = whole_alloc["shares"]
-            cash_remaining = whole_alloc["cash_remaining"]
-            stock_prices = whole_alloc["stock_prices"]
-
-            # === CONTINUOUS WEIGHTS ===
-            st.subheader("1. Continuous-weight allocation")
-
-            cont_df = pd.DataFrame(
+            # Pie chart
+            df = pd.DataFrame(
                 {
-                    "Stock": list(cont_alloc.keys()),
-                    "Weight": list(cont_alloc.values()),
+                    "Stock": list(allocations.keys()),
+                    "Weight": list(allocations.values()),
                 }
             )
 
-            fig_cont = px.pie(
-                cont_df,
+            fig = px.pie(
+                df,
                 names="Stock",
                 values="Weight",
-                title="Portfolio Allocation (Continuous Weights)",
+                title="Greedy Sharpe Allocation",
             )
-            st.plotly_chart(fig_cont, width="stretch")
+            st.plotly_chart(fig, use_container_width=True)
 
-            proj_return_cont = projected_return_from_alloc(cont_alloc, results)
-            st.metric("Projected annual return (continuous)", f"{proj_return_cont:.2%}")
-
-            # === WHOLE SHARES ===
-            st.subheader("2. Whole-share allocation")
-
-            # Calculate dollar amounts and weights
-            amounts = {t: shares[t] * stock_prices[t] for t in shares}
-            total_amount = sum(amounts.values()) or 1.0
-
-            whole_df = pd.DataFrame(
-                {
-                    "Stock": list(amounts.keys()),
-                    "Weight": [v / total_amount for v in amounts.values()],
-                }
-            )
-
-            fig_whole = px.pie(
-                whole_df,
-                names="Stock",
-                values="Weight",
-                title="Portfolio Allocation (Whole Shares)",
-            )
-            st.plotly_chart(fig_whole, width="stretch")
-
-            # Calculate projected return for whole share portfolio
-            weights_whole = {t: amt / total_amount for t, amt in amounts.items()}
-            proj_return_whole = projected_return_from_alloc(weights_whole, results)
-
+            # Metrics
             col1, col2 = st.columns(2)
             with col1:
                 st.metric(
-                    "Projected annual return (whole shares)", f"{proj_return_whole:.2%}"
+                    "Projected annual return",
+                    f"{greedy_results['portfolio_return']:.2%}",
                 )
             with col2:
-                st.metric("Cash remaining", f"${cash_remaining:,.2f}")
+                st.metric(
+                    "Portfolio Sharpe Ratio",
+                    f"{greedy_results['portfolio_sharpe']:.4f}",
+                )
 
-            # === SIDEBAR ===
-            st.sidebar.subheader(" Shares to Buy")
-            st.sidebar.caption("Sorted by number of shares (descending)")
+            # Sidebar
+            st.sidebar.subheader("Allocation Weights")
+            st.sidebar.caption("Sorted by weight (descending)")
+            for ticker, w in sorted(
+                allocations.items(), key=lambda x: x[1], reverse=True
+            ):
+                st.sidebar.write(f"**{ticker}**: {w:.2%}")
 
-            share_items = sorted(shares.items(), key=lambda x: x[1], reverse=True)
-            for ticker, n_shares in share_items:
-                st.sidebar.write(f"**{ticker}**: {n_shares} shares")
-
-            st.sidebar.divider()
-            st.sidebar.write(f" **Cash remaining**: ${cash_remaining:,.2f}")
-
-            # === HISTORICAL PERFORMANCE ===
-            st.subheader("3. Historical Stock Performance")
-
+            # Historical
+            st.subheader("Historical Stock Performance")
             prices = load_prices()
             st.line_chart(prices)
     else:
