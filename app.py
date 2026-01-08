@@ -38,7 +38,7 @@ page = st.sidebar.radio(
 # Cache Monte Carlo results to avoid recomputation
 @st.cache_data(ttl=3600)  # Cache for 1 hour
 def run_monte_carlo():
-    return monte_carlo_method(num_simulations=3000)
+    return monte_carlo_method(num_simulations=10000)
 
 
 @st.cache_data
