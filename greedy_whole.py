@@ -74,29 +74,40 @@ def allocate_whole_shares(target_allocations, stock_prices, budget):
     total_spent = sum(actual_spent.values())
     cash_remaining = budget - total_spent
 
-    # CASH SWEEP: Use remaining cash to buy more shares
+    # CASH SWEEP: Use remaining cash to buy more shares while respecting target allocations
     print(f"\nCash sweep starting with ${cash_remaining:,.2f}...")
     sweep_count = 0
 
     while cash_remaining > 0:
-        # Find stocks we can afford with remaining cash
-        affordable_stocks = []
+        # Find the stock that, when buying one more share, gets closest to its target allocation
+        best_ticker = None
+        best_error = float('inf')
+        
         for ticker, price in stock_prices.items():
             if ticker in target_allocations and price and price <= cash_remaining:
-                # Prioritize by target allocation weight (buy more of what we wanted more of)
-                affordable_stocks.append((ticker, price, target_allocations[ticker]))
-
-        if not affordable_stocks:
-            # Can't afford any more shares
+                # Calculate what the allocation would be if we buy one more share
+                test_shares = shares.get(ticker, 0) + 1
+                test_spent = test_shares * price
+                test_total = sum(actual_spent.values()) + price
+                test_allocation = test_spent / test_total
+                target_allocation = target_allocations[ticker]
+                
+                # Calculate error from target
+                error = abs(test_allocation - target_allocation)
+                
+                # Choose stock with smallest error (closest to target)
+                if error < best_error:
+                    best_error = error
+                    best_ticker = ticker
+        
+        if best_ticker is None:
+            # Can't afford any more shares or no improvement possible
             break
-
-        # Sort by target allocation (descending) to buy more of higher-priority stocks
-        affordable_stocks.sort(key=lambda x: x[2], reverse=True)
-
-        # Buy one share of the highest priority affordable stock
-        ticker, price, _ = affordable_stocks[0]
-        shares[ticker] = shares.get(ticker, 0) + 1
-        actual_spent[ticker] = shares[ticker] * price
+        
+        # Buy one more share of the stock that keeps allocation closest to target
+        price = stock_prices[best_ticker]
+        shares[best_ticker] = shares.get(best_ticker, 0) + 1
+        actual_spent[best_ticker] = shares[best_ticker] * price
         cash_remaining -= price
         sweep_count += 1
 

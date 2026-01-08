@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT))
 
 from monte_carlo_method import monte_carlo_method
-from greedy import greedy_portfolio_allocation as greedy_cont
+from algorithms.greedy import greedy_portfolio_allocation as greedy_cont
 from greedy_whole import greedy_portfolio_allocation as greedy_whole
 
 # Page config

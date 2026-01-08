@@ -128,7 +128,3 @@ def dp_knapsack_portfolio_allocation(
         print("=" * 100)
 
     return allocations, results
-
-
-if __name__ == "__main__":
-    print("This file is for import")

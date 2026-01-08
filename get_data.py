@@ -54,7 +54,6 @@ tickers = [
     "SBUX"   # Starbucks
 ]
 
-RF_rate = 0
 
 if __name__ == "__main__":
     start = "2025-01-01"
