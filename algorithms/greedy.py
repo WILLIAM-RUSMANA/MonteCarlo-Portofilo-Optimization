@@ -1,7 +1,7 @@
 import numpy as np
 from helper import calculate_sharpe_ratio
 
-MAX_ALLOCATION_PER_STOCK = 0.20
+MAX_ALLOCATION_PER_STOCK = 0.10
 MIN_ALLOCATION_PER_STOCK = 0.005
 
 
