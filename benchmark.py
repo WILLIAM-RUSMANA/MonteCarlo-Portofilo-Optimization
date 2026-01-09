@@ -13,16 +13,6 @@ def measure_algorithm(
 ) -> Dict[str, Any]:
     """
     Measure time, memory, and solution quality for an algorithm.
-    
-    Parameters:
-    - algorithm_func: The algorithm function to benchmark
-    - stocks_metrics: Monte Carlo results
-    - algorithm_name: Name for reporting
-    - num_runs: Number of times to run for statistical stability
-    - **algo_kwargs: Additional arguments for the algorithm
-    
-    Returns:
-    - Dictionary with all metrics
     """
     execution_times = []
     memory_usages = []
@@ -49,10 +39,18 @@ def measure_algorithm(
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
         
-        # Store measurements
-        execution_times.append((end_time - start_time) * 1000)  # Convert to ms
-        memory_usages.append(peak / (1024 * 1024))  # Convert to MB
+        # Store measurements (time in ms, memory in BYTES now)
+        elapsed_ms = (end_time - start_time) * 1000
+        execution_times.append(elapsed_ms)
+        memory_usages.append(peak)
         results_list.append(results)
+
+        # Per-run progress log
+        print(
+            f"    Run {run + 1}/{num_runs}: "
+            f"time={elapsed_ms:.2f} ms, "
+            f"peak_memory={peak} bytes"
+        )
     
     # Calculate statistics
     avg_result = results_list[0]  # Results should be consistent
@@ -62,8 +60,8 @@ def measure_algorithm(
         "algorithm": algorithm_name,
         "execution_time_ms": statistics.mean(execution_times),
         "execution_time_std": statistics.stdev(execution_times) if num_runs > 1 else 0,
-        "memory_usage_mb": statistics.mean(memory_usages),
-        "memory_peak_mb": max(memory_usages),
+        "memory_usage_bytes": statistics.mean(memory_usages),
+        "memory_peak_bytes": max(memory_usages),
         
         # Solution quality
         "portfolio_return": avg_result["portfolio_return"],
@@ -112,14 +110,14 @@ def display_benchmark_results(results: list):
     print("=" * 120)
     
     # Performance comparison
-    print(f"\n{'Algorithm':<15} {'Time (ms)':<15} {'Memory (MB)':<15} {'Return':<12} {'Sharpe':<12} {'Stocks':<10}")
+    print(f"\n{'Algorithm':<15} {'Time (ms)':<20} {'Memory (bytes)':<20} {'Return':<12} {'Sharpe':<12} {'Stocks':<10}")
     print("-" * 120)
     
     for r in results:
         print(
             f"{r['algorithm']:<15} "
-            f"{r['execution_time_ms']:>10.2f} ± {r['execution_time_std']:<4.2f} "
-            f"{r['memory_usage_mb']:>10.2f}     "
+            f"{r['execution_time_ms']:>10.2f} ± {r['execution_time_std']:<7.2f} "
+            f"{r['memory_usage_bytes']:>15.0f}     "
             f"{r['portfolio_return']:>10.2%}  "
             f"{r['portfolio_sharpe']:>10.4f}  "
             f"{r['num_stocks']:>8}"

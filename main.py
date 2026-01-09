@@ -18,7 +18,7 @@ if __name__ == "__main__":
     results = benchmark_all_algorithms(
         stocks_metrics, 
         target_num_stocks=50, 
-        num_runs=5
+        num_runs=10
     )
     
     # Display results
