@@ -15,7 +15,7 @@ from algorithms.dp_knapsack import dp_knapsack_portfolio_allocation
 from greedy_whole import greedy_portfolio_allocation as greedy_whole_shares
 from dp_knapsack_whole import dp_knapsack_portfolio_allocation as dp_whole_shares
 from equal_whole import equal_weight_allocation as equal_whole_shares
-from constants import CSV_BACKTEST_2025
+from constants import CSV_BACKTEST_2025_50
 
 
 st.set_page_config(page_title="Portfolio Allocator", layout="wide")
@@ -43,7 +43,7 @@ def run_monte_carlo():
 
 @st.cache_data
 def load_prices():
-    df = pd.read_csv(CSV_BACKTEST_2025, parse_dates=["Date"])
+    df = pd.read_csv(CSV_BACKTEST_2025_50, parse_dates=["Date"])
     df.set_index("Date", inplace=True)
     return df
 

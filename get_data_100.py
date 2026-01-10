@@ -1,0 +1,126 @@
+import yfinance as yf
+
+
+tickers = [
+    "AAPL",  # Apple
+    "MSFT",  # Microsoft
+    "NVDA",  # Nvidia
+    "JPM",   # JPMorgan Chase
+    "V",     # Visa
+    "AMZN",  # Amazon
+    "META",  # Meta Platforms
+    "JNJ",   # Johnson & Johnson
+    "PFE",   # Pfizer
+    "XOM",   # ExxonMobil
+    "CVX",   # Chevron
+    "CAT",   # Caterpillar
+    "KO",    # Coca-Cola
+    "PG",    # Procter & Gamble
+    "GOOGL", # Alphabet (Google)
+    "AVGO",  # Broadcom
+    "BRK-B", # Berkshire Hathaway Class B
+    "WMT",   # Walmart
+    "LLY",   # Eli Lilly
+    "ORCL",  # Oracle
+    "MA",    # Mastercard
+    "HD",    # Home Depot
+    "COST",  # Costco
+    "MRK",   # Merck & Co.
+    "PEP",   # PepsiCo
+    "BAC",   # Bank of America
+    "CSCO",  # Cisco Systems
+    "ETSY",   # Salesforce
+    "SAP",   # SAP SE
+    "DIS",   # Walt Disney
+    "TMO",   # Thermo Fisher Scientific
+    "MCD",   # McDonald's
+    "ABT",   # Abbott Laboratories
+    "WFC",   # Wells Fargo
+    "CMCSA", # Comcast
+    "INTC",  # Intel
+    "VZ",    # Verizon
+    "QCOM",  # Qualcomm
+    "TXN",   # Texas Instruments
+    "NKE",   # Nike
+    "UPS",   # United Parcel Service
+    "PM",    # Philip Morris International
+    "UNH",   # UnitedHealth Group
+    "MS",    # Morgan Stanley
+    "BA",    # Boeing
+    "HON",   # Honeywell
+    "IBM",   # IBM
+    "GE",    # General Electric
+    "GS",    # Goldman Sachs
+    "SBUX",   # Starbucks
+    "TSLA",   # Tesla (Consumer Discretionary)
+    "ABBV",   # AbbVie (Healthcare)
+    "AMD",    # Advanced Micro Devices (Information Technology)
+    "LIN",    # Linde plc (Materials)
+    "ADBE",   # Adobe (Information Technology)
+    "ISRG",   # Intuitive Surgical (Healthcare)
+    "CRM",    # Salesforce (Information Technology)
+    "T",      # AT&T (Communication Services)
+    "AMAT",   # Applied Materials (Information Technology)
+    "BKNG",   # Booking Holdings (Consumer Discretionary)
+    "LRCX",   # Lam Research (Information Technology)
+    "TJX",    # TJX Companies (Consumer Discretionary)
+    "MU",     # Micron Technology (Information Technology)
+    "VRTX",   # Vertex Pharmaceuticals (Healthcare)
+    "REGN",   # Regeneron Pharmaceuticals (Healthcare)
+    "PANW",   # Palo Alto Networks (Information Technology)
+    "MDLZ",   # Mondelez International (Consumer Staples)
+    "SCHW",   # Charles Schwab (Financials)
+    "BSX",    # Boston Scientific (Healthcare)
+    "AXP",    # American Express (Financials)
+    "C",      # Citigroup (Financials)
+    "CB",     # Chubb Limited (Financials)
+    "PGR",    # Progressive Corp (Financials)
+    "ETN",    # Eaton Corp (Industrials)
+    "FI",     # Fiserv (Financials)
+    "ADI",    # Analog Devices (Information Technology)
+    "DE",     # Deere & Company (Industrials)
+    "PLTR",   # Palantir Technologies (Information Technology)
+    "UBER",   # Uber Technologies (Industrials)
+    "BX",     # Blackstone (Financials)
+    "NOW",    # ServiceNow (Information Technology)
+    "COP",    # ConocoPhillips (Energy)
+    "SYK",    # Stryker Corp (Healthcare)
+    "ELV",    # Elevance Health (Healthcare)
+    "LMT",    # Lockheed Martin (Industrials)
+    "GEV",    # GE Vernova (Industrials)
+    "GILD",   # Gilead Sciences (Healthcare)
+    "ABNB",   # Airbnb (Consumer Discretionary)
+    "SHOP",   # Shopify (Information Technology)
+    "ZTS",    # Zoetis (Healthcare)
+    "MDT",    # Medtronic (Healthcare)
+    "SPGI",   # S&P Global (Financials)
+    "KLAC",   # KLA Corporation (Information Technology)
+    "DHR",    # Danaher (Healthcare)
+    "MO",     # Altria Group (Consumer Staples)
+    "CVS",    # CVS Health (Healthcare)
+    "AMT",    # American Tower (Real Estate)
+    "PLD",    # Prologis (Real Estate)
+    "OTIS",   # Intuitive Surgical (Healthcare)
+    "MMC"     # Marsh & McLennan (Financials)
+]
+
+if __name__ == "__main__":
+    start = "2013-01-01"
+    end = "2024-12-31"
+    start_year = start[0:4]
+    end_year = end[0:4]
+
+    complete_data = yf.download(tickers, start=start, end=end)  # Meta IPO 2012
+
+    # Check what columns exist
+    print(complete_data.columns.levels[0])
+
+    # Use "Close" instead of "Adj Close"
+    if "Adj Close" in complete_data.columns.levels[0]:
+        target_price_data = complete_data["Adj Close"]
+    else:
+        target_price_data = complete_data["Close"]
+
+    target_price_data.to_csv(f"data/{len(tickers)}stocks_close_{start_year}_{end_year}.csv")
+
+    print("Saved closing prices:", target_price_data.shape)

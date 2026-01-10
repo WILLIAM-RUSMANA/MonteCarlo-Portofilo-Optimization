@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from constants import CSV_FILE, NUM_SIMULATIONS, TRADING_DAYS_PER_YEAR
+from constants import CSV_FILE_50, NUM_SIMULATIONS, TRADING_DAYS_PER_YEAR
 
 
 def load_and_prepare_data(filepath):
@@ -119,7 +119,7 @@ def monte_carlo_method(
     num_simulations=NUM_SIMULATIONS, trading_days_per_year=TRADING_DAYS_PER_YEAR
 ):
     print("Loading stock data...")
-    prices = load_and_prepare_data(CSV_FILE)
+    prices = load_and_prepare_data(CSV_FILE_50)
 
     print(f"Data loaded: {len(prices)} days of data")
     print(f"Date range: {prices.index[0].date()} to {prices.index[-1].date()}")
