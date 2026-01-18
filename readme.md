@@ -462,4 +462,12 @@ For questions or issues, review the code comments or check the `archive/` folder
 
 ---
 
+## 📋 Project Report
+
+See the [MonteCarlo Portfolio Allocation Final Report.pdf](MonteCarlo%20Portfolio%20Allocation%20Final%20Report.pdf) for comprehensive analysis and results.
+
+**Test Environment**: All tests were run on a 16GB RAM device using AMD Ryzen 7 7840U w/Radeon(TM) 780M Graphics.
+
+---
+
 **Last Updated**: January 2026
